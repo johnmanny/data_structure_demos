@@ -29,6 +29,7 @@ class rbTree
 		void leftRotate(node *);
 		void rightRotate(node *);
 		void removeFix(node *);
+		void destroyTree(node *&);
 
 		//rb tree node
 		struct node
@@ -37,7 +38,7 @@ class rbTree
 			char color;
 			node * left;
 			node * right;
-			node * parent;
-		}
+			//node * parent;
+		};
 		node * root;
-}
+};
