@@ -47,13 +47,13 @@ void rbTree::destroyTree(node *& tempNode) {
 //////////////////////////////////////
 // project requirements
 
+
 // insert by integer
 void rbTree::insert(int x) {
 	node * cur = new node;
-	cur->parent = nil;
+	cur->key = x;
 	cur->left = nil;
 	cur->right = nil;
-	cur->key = x;
 	cur->color = 'r';
 	node * prev = nil;
 	node * next = root;
@@ -66,85 +66,99 @@ void rbTree::insert(int x) {
 		else
 			next = next->right;
 	}
-	//if no root, make
+	
+	// use prev as insert point
+	cur->parent = prev;
 	if (prev == nil)
 		root = cur;
-	//if key is less than position determined (prev) in while loop, place, else
 	else if (cur->key < prev->key) {
 		prev->left = cur;
-		cur->parent = prev;
 	}
 	else {
-
 		prev->right = cur;
-		cur->parent = prev;
 	}
-	//output key and color about to be insertfixed
-	//cout << "about to insertfix: " << cur->key << "color: " << cur->color << endl;
 	insertFix(cur);
 }
 
+
 /*
-	case1: cur's uncle red
-	case2: cur's uncle black and cur is right child
-	case3: cur's uncle black and cur left child
+//////// INSERT FIX
+	CASE A/B: parent is leftchild or rightchild
+		case1: cur's uncle red
+		case2: cur's uncle black and cur is right child
+		case3: cur's uncle black and cur left child
 */
-// insert fix
-void rbTree::insertFix(node * cur) {
+void rbTree::insertFix(node *& cur) {
+	node * parent = nil;
+	node * grandParent = nil;
+
 	//while parent red (which violates property 4)
-	while (cur->parent->color == 'r') {
-		//if parent leftchild, select uncle
-		//node * uncle = nil;
-		if (cur->parent == cur->parent->parent->left) {
-			node * uncle = cur->parent->parent->right;
-			
+	while ((cur->parent->color == 'r') && (cur != root)) {
+		parent = cur->parent;
+		grandParent = cur->parent->parent;
+
+		// case A
+		// parent is a leftchild
+		if (parent == grandParent->left) {
+			node * uncle = grandParent->right;
+
+			// case 1
+			// uncle red, then only recolor
 			if (uncle->color == 'r') {
-				cur->parent->color = 'b';
+				parent->color = 'b';
 				uncle->color = 'b';
-				cur->parent->parent->color = 'r';
-				cur = cur->parent->parent;
+				grandParent->color = 'r';
+				cur = grandParent;
 			}
-			//if cur is rightchild, double rotate
-			else if (cur == cur->parent->right) {
-				//case 2, we know uncle black
-				cur = cur->parent;
-				leftRotate(cur);
-				//case 3, cur and parent red
-				//cur->parent->color = 'b';
-				//cur->parent->parent->color = 'r';
-				//rightRotate(cur->parent->parent);
+			else {
+
+				// case 2
+				// cur is rightchild, left rotation
+				if (cur == parent->right) {
+					//cur = cur->parent;
+					//leftRotate(cur);
+					leftRotate(parent);
+					cur = parent;
+					parent = cur->parent;
+				}
+
+				// case 3
+				// cur is leftchild, right rotation req
+				rightRotate(grandParent);
+				parent->color = 'b';
+				grandParent->color = 'r';
+				cur = parent;
 			}
-			cur->parent->color = 'b';
-			cur->parent->parent->color = 'r';
-			rightRotate(cur->parent->parent);
 		}
-		//same as if but reversed tree side
+		// Case B
+		// parent rightchild, reverse left and right
 		else {
-			node * uncle = cur->parent->parent->left;
+			node * uncle = grandParent->left;
 
 			if (uncle->color == 'r') {
-				cur->parent->color = 'b';
+				parent->color = 'b';
 				uncle->color = 'b';
-				cur->parent->parent->color = 'r';
-				cur = cur->parent->parent;
+				grandParent->color = 'r';
+				cur = grandParent;
 			}
-			else if (cur == cur->parent->left) {
-				cur = cur->parent;
-				rightRotate(cur);
-				//cur->parent->color = 'b';
-				//cur->parent->parent->color = 'r';
-				//leftRotate(cur->parent->parent);
+			else {
+				 if (cur == parent->left) {
+					rightRotate(parent);
+					cur = parent;
+				}
+				leftRotate(grandParent);
+				parent->color = 'b';
+				grandParent->color = 'r';
+				cur = parent;
 			}
-			cur->parent->color = 'b';
-			cur->parent->parent->color = 'r';
-			leftRotate(cur->parent->parent);
 		}
 	}
 	//always set root to black
 	root->color = 'b';		
 }
 
-/*
+
+/*////////////// REMOVE BY KEY
 	want to delete node with key x. we find it and set it to cur.
 	case1: cur has < 2 children, cur removed
 		a. if no leftchild, transplant right subtree(could also be nil)
@@ -154,9 +168,7 @@ void rbTree::insertFix(node * cur) {
 		b. determine color
 		c. grab right subtree of min node on right
 		d. if cur parent of 
-
-*/
-//remove
+/////////////// COMMENTING IN PROGRESS */
 bool rbTree::remove(int x) {
 	//first we find node to remove
 	node * cur = findNodeByKey(x);
@@ -201,14 +213,13 @@ bool rbTree::remove(int x) {
 	return true;
 }
 
-/*
+
+/*//////////// REMOVE FIX
 	case1: cur's sibling red
 	case2: cur's sibling temp is black, and both of temp's children black
 	case3: cur's sibling black, temp's left red and right black
-	case4: cur's sibling temp is black & temp's right is red 
-*/
-//removefix
-void rbTree::removeFix(node * cur) {
+	case4: cur's sibling temp is black & temp's right is red */
+void rbTree::removeFix(node *& cur) {
 	while (cur != root && cur->color == 'b') {
 		// if cur is left child, consider sibling (right child of parent)
 		if (cur == cur->parent->left) {
@@ -266,6 +277,7 @@ void rbTree::removeFix(node * cur) {
 }
 
 bool rbTree::search(int key) {
+	
 	if (findNodeByKey(key) == nil)
 		return false;
 	else
@@ -344,7 +356,7 @@ node* rbTree::findSuccessor(node * cur) {
 
 
 // transplant, used to move subtrees(by moving their roots)
-void rbTree::transplant(node * cur, node * toMove) {
+void rbTree::transplant(node *& cur, node *& toMove) {
 
 	if (cur->parent == nil)
 		root = toMove;
@@ -356,7 +368,8 @@ void rbTree::transplant(node * cur, node * toMove) {
 }
 
 // left rotate 
-void rbTree::leftRotate(node * cur) {
+void rbTree::leftRotate(node *& cur) {
+	/*
 	if (cur->right == nil)
 		return;
 	else {
@@ -378,8 +391,8 @@ void rbTree::leftRotate(node * cur) {
 			cur->parent->right = other;
 		other->left = cur;
 		cur->parent = other;
-	}	
-	/*
+	}
+	*/	
 	node * other = cur->right;	//set to rotate with
 	cur->right = other->left;	//transplant subtrees
 	if (other->left != nil)
@@ -393,11 +406,11 @@ void rbTree::leftRotate(node * cur) {
 		cur->parent->right = other;
 	other->left = cur;		//place cur on other's left
 	cur->parent = other;
-	*/
+
 }
 
 // right rotate
-void rbTree::rightRotate(node * cur) {
+void rbTree::rightRotate(node *& cur) {
 	node * other = cur->left;	//set to rotate with
 	cur->left = other->right;	//transplant subtrees
 	if (other->right != nil)

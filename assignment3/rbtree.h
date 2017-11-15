@@ -38,18 +38,17 @@ class rbTree
 
 	private:
 		// called inside fix funcs
-		void insertFix(node *);
-		void removeFix(node *);
+		void insertFix(node *&);
+		void removeFix(node *&);
 
 		// node utility functions (node funcs return pointers)
 		node *findNodeByKey(int);
 		node *findSuccessor(node *);
 		node *findMinNode(node *);
 		node *findMaxNode(node *);
-		void leftRotate(node *);
-		void rightRotate(node *);
-		void transplant(node *, node *);
-
+		void leftRotate(node *&);
+		void rightRotate(node *&);
+		void transplant(node *&, node *&);
 
 		// other functions
 		void destroyTree(node *&);
