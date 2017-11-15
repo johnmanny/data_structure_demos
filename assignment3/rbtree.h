@@ -1,7 +1,7 @@
 /*
-author:
-sources:
-desc:
+author: John Nemeth
+sources: previous projects, class material
+description: header file for rbtree class
 */
 
 #ifndef RBTREE_H
@@ -41,7 +41,7 @@ class rbTree
 		void insertFix(node *&);
 		void removeFix(node *&);
 
-		// node utility functions (node funcs return pointers)
+		// node utility functions
 		node *findNodeByKey(int);
 		node *findSuccessor(node *);
 		node *findMinNode(node *);

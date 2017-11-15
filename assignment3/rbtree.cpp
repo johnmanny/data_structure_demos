@@ -1,20 +1,19 @@
 /*
-author:
-sources:
-description:
+author: John Nemeth
+sources: class material, previous projects
+description: implementation file for RBTree class
 */
 
 #include "rbtree.h"
 #include <iostream>
 #include <iomanip>
 
-// GLOBALS
-
 
 ///////////////////////////////////////
 //constructor/destructors
 
 rbTree::rbTree() {
+
 	//create sentinel which always has black color
 	nil = new node;
 	nil->color = 'b';
@@ -22,6 +21,7 @@ rbTree::rbTree() {
 	nil->parent = nil;
 	nil->left = nil;
 	nil->right = nil;
+
 	//set root to sentinel, which we use in place of 'NULL'
 	root = nil;
 }
@@ -31,11 +31,10 @@ rbTree::~rbTree() {
 	delete nil;
 }
 
-//////////////////////////////////////
-// maintinence funcs
 
 // recursively destroy tree
 void rbTree::destroyTree(node *& tempNode) {
+	
 	//only execute when root, or any node, is not sentinel
 	if (tempNode != nil) {
 		destroyTree(tempNode->left);
@@ -46,7 +45,6 @@ void rbTree::destroyTree(node *& tempNode) {
 
 //////////////////////////////////////
 // project requirements
-
 
 // insert by integer
 void rbTree::insert(int x) {
@@ -131,7 +129,7 @@ void rbTree::insertFix(node *& cur) {
 			}
 		}
 		// Case B
-		// parent rightchild, reverse left and right
+		// parent rightchild, reverse left and right operations, otherwise is same
 		else {
 			node * uncle = grandParent->left;
 
@@ -170,26 +168,26 @@ void rbTree::insertFix(node *& cur) {
 		d. if cur parent of 
 /////////////// COMMENTING IN PROGRESS */
 bool rbTree::remove(int x) {
-	//first we find node to remove
+	
+	// find node to remove
 	node * cur = findNodeByKey(x);
 	if (cur == nil)
 		return false;
-	//cout << "curkey is: " << cur->key << endl;
-	//cout << "cur: " << cur->parent << endl;	
-	
-	// temp maintained as cur if cur has < 2 children, or is value that replaces cur
-	// temp2 is root of subtree moved
 	node * temp = cur;
 	node * temp2 = NULL;
 	char tempOrigColor = temp->color;
+	
+	// Case 1 - A: no leftchild, so transplant right subtree 
 	if (cur->left == nil) {
 		temp2 = cur->right;
 		transplant(cur, cur->right);
 	}
+	// Case 1 - B: no rightchild, so transplant left subtree 
 	else if (cur->right == nil) {
 		temp2 = cur->left;
 		transplant(cur, cur->left);
 	}
+	// Case 2
 	else {
 		temp = findMinNode(cur->right);		//find replacement inorder from cur
 		tempOrigColor = temp->color;		//find color of replacement
@@ -273,9 +271,9 @@ void rbTree::removeFix(node *& cur) {
 		}
 	cur->color = 'b';
 	}
-
 }
 
+// search for key (called from main)
 bool rbTree::search(int key) {
 	
 	if (findNodeByKey(key) == nil)
@@ -284,7 +282,7 @@ bool rbTree::search(int key) {
 		return true;
 }
 
-// return largest key in tree
+// return largest key in tree (called from main)
 int rbTree::maximum() {
 	node * cur = findMaxNode(root);
 	if (cur == nil) {
@@ -297,7 +295,7 @@ int rbTree::maximum() {
 	}
 }
 
-// return smallest key in tree
+// return smallest key in tree (called from main)
 int rbTree::minimum() {
 	node * cur = findMinNode(root);
 	if (cur == nil) {
