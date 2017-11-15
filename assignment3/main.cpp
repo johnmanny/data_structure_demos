@@ -1,7 +1,9 @@
 /*
-author:
-sources:
-description:
+author: John Nemeth
+sources: class notes, previous projects,
+	  http://www.geeksforgeeks.org/c-program-red-black-tree-insertion/	
+
+description: driver file for RBtree implementation assignment
 */
 
 #include <iostream>
@@ -15,7 +17,7 @@ int main(int argc, char* argv[]) {
 	ifstream in;
 	rbTree tree;
 
-	// if no file given in command line argument
+	// check if filename argument is present
 	if (argc == 1)
 		cerr << "Error! Usage is " << argv[0] << " 'filename'" << endl;
 
@@ -26,9 +28,9 @@ int main(int argc, char* argv[]) {
 		int key = 0;
 		char command[MAXCHARS];
 		while (!in.eof()) {
+			
 			// get first 3 chars from line
 			in.get(command, 3, '\n');
-			//cout << command << endl;
 			if (strstr(command, "in")) {
 				in.ignore(MAXCHARS, ' ');
 				in >> key;
@@ -61,32 +63,6 @@ int main(int argc, char* argv[]) {
 		}
 	in.close();
 	}
-
-	/*
-	cout << "testing" << endl;
-	tree.insert(5);
-	tree.print();
-	tree.insert(6);
-	tree.print();
-	tree.insert(1);
-	tree.print();
-	tree.insert(40);
-	tree.print();
-	tree.insert(35);
-	tree.print();
-	tree.insert(2);
-	tree.print();
-	tree.insert(20);
-	tree.print();
-	tree.remove(2);
-	tree.remove(5);
-	tree.print();
-	if (tree.remove(11))
-		cout << "removed" << endl;
-	else
-		cout << "error" << endl;
-	
-	*/
 	return 0;
 }
 
