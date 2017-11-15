@@ -1,0 +1,37 @@
+18
+print
+remove 2
+max
+search 5
+printinsert 1
+insert 2
+print
+search 1
+search 2
+print
+insert 3
+print
+insert 10
+insert 5
+search 10
+search 5
+insert 100
+print
+search 5
+remove 2
+remove 101
+insert 26
+search 24
+max
+insert 58
+insert 10
+insert 105
+insert 10
+print
+max
+min
+remove 101
+print
+print
+max
+min
