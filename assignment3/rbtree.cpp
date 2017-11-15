@@ -8,43 +8,65 @@ description:
 #include <iostream>
 #include <iomanip>
 
-//constructor/destructors//////////////
+// GLOBALS
+
+
+///////////////////////////////////////
+//constructor/destructors
+
 rbTree::rbTree() {
-	root = NULL;
+	//create sentinel which always has black color
+	nil = new node;
+	nil->color = 'b';
+	nil->key = 101010101;
+	//set root to sentinel, which we use in place of 'NULL'
+	root = nil;
 }
 
 rbTree::~rbTree() {
 	destroyTree(root);
+	delete nil;
 }
 
-//utility functions
+//////////////////////////////////////
+// maintinence funcs
+
+// recursively destroy tree
 void rbTree::destroyTree(node *& tempNode) {
-	if (tempNode) {
+	//only execute when root, or any node, is not sentinel
+	if (tempNode != nil) {
 		destroyTree(tempNode->left);
 		destroyTree(tempNode->right);
 		delete tempNode;
 	}
 }
 
-//insert key
+//////////////////////////////////////
+// project requirements
+
+// insert by integer
 void rbTree::insert(int x) {
 	node * cur = new node;
-	cur->parent = NULL;
-	cur->left = NULL;
-	cur->right = NULL;
+	cur->parent = nil;
+	cur->left = nil;
+	cur->right = nil;
 	cur->key = x;
 	cur->color = 'r';
-	node * prev = NULL;
+	node * prev = nil;
 	node * next = root;
-	while (next != NULL) {
+	
+	//if there is a root, find position for cur using 'prev'
+	while (next != nil) {
 		prev = next;
-		if (x < next->key)
+		if (cur->key < next->key)
 			next = next->left;
 		else
 			next = next->right;
 	}
-	if (prev == NULL)
+	//if no root, make
+	if (prev == nil)
 		root = cur;
+	//if key is less than position determined (prev) in while loop, place, else
 	else if (cur->key < prev->key) {
 		prev->left = cur;
 		cur->parent = prev;
@@ -54,37 +76,40 @@ void rbTree::insert(int x) {
 		prev->right = cur;
 		cur->parent = prev;
 	}
-	insertfix(cur);
+	//output key and color about to be insertfixed
+	cout << "about to insertfix: " << cur->key << "color: " << cur->color << endl;
+	insertFix(cur);
 }
 
-//insertfix
+// fix by balancing tree using red-black node properties
+// note: no restriction on black nodes neighbors
 void rbTree::insertFix(node * cur) {
-	//root always black
-	if (cur == root) {
-		cur->color = 'b';
-		return;
-	}
-	//while parent is red
+	//while parent red (which violates property 4)
 	while (cur->parent->color == 'r') {
-		//if cur's parent is leftchild 
-		node * other = NULL;
-		if (cur->parent == cur->parent->parent->left)
+		//if parent leftchild, select uncle
+		node * other = cur->parent->parent->right;
+		if (cur->parent == cur->parent->parent->left) {
 			other = cur->parent->parent->right;
-			//if cur's uncle is red(parent already red), change parent and uncle to black and grandparent to red
+			//if uncle is red, change parent and uncle to black, grandp to red
+			//and exchange cur and grandparent (case 1)
 			if (other->color == 'r') {
 				cur->parent->color = 'b';
 				other->color = 'b';
 				cur->parent->parent->color = 'r';
 				cur = cur->parent->parent;
 			}
-			//if cur is rightchild
+			//if cur is rightchild, double rotate
 			else if (cur == cur->parent->right) {
+				//case 2, we know uncle black
 				cur = cur->parent;
 				leftRotate(cur);
+				//case 3, cur and parent red
 				cur->parent->color = 'b';
 				cur->parent->parent->color = 'r';
 				rightRotate(cur->parent->parent);
 			}
+		}
+		//same as if but reversed tree side
 		else {
 			other = cur->parent->parent->left;
 			if (other->color == 'r') {
@@ -93,7 +118,7 @@ void rbTree::insertFix(node * cur) {
 				cur->parent->parent->color = 'r';
 				cur = cur->parent->parent;
 			}
-			else if (cur == cur->parent->right) {
+			else if (cur == cur->parent->left) {
 				cur = cur->parent;
 				rightRotate(cur);
 				cur->parent->color = 'b';
@@ -102,11 +127,129 @@ void rbTree::insertFix(node * cur) {
 			}
 		}
 	}
-	//root to black
+	//always set root to black
 	root->color = 'b';		
 }
 
-//rotations
+
+//remove
+void rbTree::remove(int x) {
+	//first we find node to remove
+	node * cur = findNodeByKey(x);
+	//cout << "curkey is: " << cur->key << endl;
+	//cout << "cur: " << cur->parent << endl;	
+	
+	//new node from node to be removed
+	//keep original color
+	
+	//set temp to node when cur has < 2 children
+	node * temp = cur;
+	char tempOrigColor = temp->color;
+	if (cur->left == nil) {
+		node * temp2 = cur->right;
+		transplant(cur, cur->right);
+	}
+	else if (cur->right == nil) {
+		node * temp2 = cur->left;
+		transplant(cur, cur->left);
+	}
+	else {
+		temp = findMinNode(cur->right);
+		tempOrigColor = temp->color;
+		node * temp2 = temp->right;
+		if (temp->parent == cur)
+			temp2->parent = temp;
+		else {
+			transplant(temp, temp->right);
+			temp->right = cur->right;
+			temp->right->parent = temp;
+		}
+		transplant(cur, temp);
+		temp->left = cur->left;
+		temp->left->parent = temp;
+		temp->color = cur->color;
+	}
+	if (tempOrigColor == 'b')
+		cout << "done" << endl;
+		//deletefixupho
+
+}
+
+
+//removefix
+void rbTree::removeFix(node * cur) {
+
+}
+
+// return largest key in tree
+int rbTree::maximum() {
+	node * cur = findMaxNode(root);
+	return cur->key;
+}
+
+// return smallest key in tree
+int rbTree::minimum() {
+	node * cur = findMinNode(root);
+	return cur->key;
+}
+
+//////////////////////////////////////////////////////////////
+// node movement/maintinence functions
+
+// find node of minimum
+node* rbTree::findMinNode(node * cur) {
+	while (cur->left != nil)
+		cur = cur->left;
+	return cur;
+}
+
+node* rbTree::findMaxNode(node * cur) {
+	while (cur->right != nil)
+		cur = cur->right;
+	return cur;
+}
+
+// find node by key
+node* rbTree::findNodeByKey(int x) {
+	node * cur = root;
+	while (cur != nil && x != cur->key) {
+		if (x < cur->key)
+			cur = cur->left;
+		else
+			cur = cur->right;
+	}
+	return cur;
+}
+
+// find successor
+node* rbTree::findSuccessor(node * cur) {
+	if (cur->right != nil) {
+		while (cur->left != nil)
+			cur = cur->left;
+		return cur;
+	}
+	node * other = cur->parent;
+	while (other != nil && cur == other->right) {
+		cur = other;
+		other = other->parent;
+	}
+	return other;
+}
+
+
+// transplant, used to move subtrees(by moving their roots)
+void rbTree::transplant(node * cur, node * toMove) {
+
+	if (cur->parent == nil)
+		root = toMove;
+	else if (cur == cur->parent->left)
+		cur->parent->left = toMove;
+	else
+		cur->parent->right = toMove;
+	toMove->parent = cur->parent;
+}
+
+// left rotate 
 void rbTree::leftRotate(node * cur) {
 	if (cur->right == NULL)
 		return;
@@ -132,6 +275,7 @@ void rbTree::leftRotate(node * cur) {
 	}	
 }
 
+// right rotate
 void rbTree::rightRotate(node * cur) {
 	if (cur->left == NULL)
 		return;
@@ -157,3 +301,18 @@ void rbTree::rightRotate(node * cur) {
 	}
 }
 
+
+///////////////////////////////////////////////////////////
+//print function
+void rbTree::print() {
+	inOrderPrint(root);
+	cout << "root: " << root->key << " color: " << root->color << endl;
+}
+
+void rbTree::inOrderPrint(node * cur) {
+	if (cur == nil)
+		return;
+	inOrderPrint(cur->left);
+	cout << "key: "<< cur->key << " color: " << cur->color << endl;
+	inOrderPrint(cur->right);
+}
