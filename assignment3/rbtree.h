@@ -28,7 +28,7 @@ class rbTree
 
 		//assignment requirements
 		void insert(int);
-		void remove(int);
+		bool remove(int);
 		bool search(int);
 		int maximum();
 		int minimum();
