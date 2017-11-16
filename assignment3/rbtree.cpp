@@ -157,57 +157,58 @@ void rbTree::insertFix(node *& cur) {
 
 
 /*////////////// REMOVE BY KEY
-	want to delete node with key x. we find it and set it to cur.
-	case1: cur has < 2 children, cur removed
+	want to delete node with key x. we find it and set it to toberemoved
+	case1: toberemoved has < 2 children
 		a. if no leftchild, transplant right subtree(could also be nil)
 		b. elseif no rightchild, transplant left subtree(could also be nil)
-	case2: cur has 2 children
-		a. find min node on right
-		b. determine color
-		c. grab right subtree of min node on right
-		d. if cur parent of 
+	case2: toberemoved has 2 children
+		a. find min node on right (successor, which has no left subtree)
+		b. determine color of successor
+		c. grab right subtree of successor
+			1. if successor's parent is toberemoved(cur)
+				
 /////////////// COMMENTING IN PROGRESS */
 bool rbTree::remove(int x) {
 	
 	// find node to remove
-	node * cur = findNodeByKey(x);
-	if (cur == nil)
+	node * toBeRemoved = findNodeByKey(x);
+	if (toBeRemoved == nil)
 		return false;
-	node * temp = cur;
-	node * temp2 = NULL;
-	char tempOrigColor = temp->color;
+	node * successor = toBeRemoved;
+	node * rightSubtree = NULL;
+	char succOrigColor = successor->color;
 	
 	// Case 1 - A: no leftchild, so transplant right subtree 
-	if (cur->left == nil) {
-		temp2 = cur->right;
-		transplant(cur, cur->right);
+	if (toBeRemoved->left == nil) {
+		rightSubtree = toBeRemoved->right;
+		transplant(toBeRemoved, toBeRemoved->right);
 	}
 	// Case 1 - B: no rightchild, so transplant left subtree 
-	else if (cur->right == nil) {
-		temp2 = cur->left;
-		transplant(cur, cur->left);
+	else if (toBeRemoved->right == nil) {
+		rightSubtree = toBeRemoved->left;
+		transplant(toBeRemoved, toBeRemoved->left);
 	}
 	// Case 2
 	else {
-		temp = findMinNode(cur->right);		//find replacement inorder from cur
-		tempOrigColor = temp->color;		//find color of replacement
-		temp2 = temp->right;			//get right subtree of replacement
-		if (temp->parent == cur)		//if replacment's parent is to to be removed
-			temp2->parent = temp;		//set replacement's right subtree's parent to 
+		successor = findMinNode(toBeRemoved->right);	
+		succOrigColor = successor->color;
+		rightSubtree = successor->right;
+		if (successor->parent == toBeRemoved)
+			rightSubtree->parent = successor;
 		else {
-			transplant(temp, temp->right);
-			temp->right = cur->right;
-			temp->right->parent = temp;
+			transplant(successor, successor->right);
+			successor->right = toBeRemoved->right;
+			successor->right->parent = successor;
 		}
-		transplant(cur, temp);
-		temp->left = cur->left;
-		temp->left->parent = temp;
-		temp->color = cur->color;
+		transplant(toBeRemoved, successor);
+		successor->left = toBeRemoved->left;
+		successor->left->parent = successor;
+		successor->color = toBeRemoved->color;
 	}
 	// if original node color was black, removing it could've caused violations
-	if (tempOrigColor == 'b')
-		removeFix(temp2);
-	delete cur;
+	if (succOrigColor == 'b')
+		removeFix(rightSubtree);
+	delete toBeRemoved;
 	return true;
 }
 
