@@ -400,7 +400,7 @@ void rbTree::print() {
 	}
 	else {
 		int keys[size], index = 0;
-		char spaces[size - 1] = { ' ' };
+		char spaces[size] = { ' ' };
 		inOrderPrint(root, keys, index);
 		for (index = 0; index < size; index++) {
 			cout << keys[index];
