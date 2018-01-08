@@ -7,13 +7,13 @@ description: implementation file for RBTree class
 #include "rbtree.h"
 #include <iostream>
 #include <iomanip>
-
+#include <cstring>
 
 ///////////////////////////////////////
 //constructor/destructors
 
 rbTree::rbTree() {
-
+	size = 0;
 	//create sentinel which always has black color
 	nil = new node;
 	nil->color = 'b';
@@ -31,7 +31,6 @@ rbTree::~rbTree() {
 	delete nil;
 }
 
-
 // recursively destroy tree
 void rbTree::destroyTree(node *& tempNode) {
 	
@@ -48,6 +47,7 @@ void rbTree::destroyTree(node *& tempNode) {
 
 // insert by integer
 void rbTree::insert(int x) {
+	size++;
 	node * cur = new node;
 	cur->key = x;
 	cur->left = nil;
@@ -76,6 +76,7 @@ void rbTree::insert(int x) {
 		prev->right = cur;
 	}
 	insertFix(cur);
+
 }
 
 
@@ -209,6 +210,7 @@ bool rbTree::remove(int x) {
 	if (succOrigColor == 'b')
 		removeFix(rightSubtree);
 	delete toBeRemoved;
+	size--;
 	return true;
 }
 
@@ -341,19 +343,6 @@ node* rbTree::findNodeByKey(int x) {
 		return nil;
 }
 
-// find successor
-node* rbTree::findSuccessor(node * cur) {
-	if (cur->right != nil)
-		return findMinNode(cur->right);
-	node * other = cur->parent;
-	while (other != nil && cur == other->right) {
-		cur = other;
-		other = other->parent;
-	}
-	return other;
-}
-
-
 // transplant, used to move subtrees(by moving their roots)
 void rbTree::transplant(node *& cur, node *& toMove) {
 
@@ -368,30 +357,6 @@ void rbTree::transplant(node *& cur, node *& toMove) {
 
 // left rotate 
 void rbTree::leftRotate(node *& cur) {
-	/*
-	if (cur->right == nil)
-		return;
-	else {
-		node * other = cur->right;
-		//make other's left child a rightchild of cur
-		if (other->left != nil) {
-			cur->right = other->left;
-			other->left->parent = cur;
-		}
-		else
-			cur->right = nil;
-		other->parent = cur->parent;
-		//check position of cur and place other there
-		if (cur->parent == nil)			//cur is root case
-			root = other;
-		else if (cur == cur->parent->left)	//cur is parent's left child
-			cur->parent->left = other;
-		else					//cur is parent's right child
-			cur->parent->right = other;
-		other->left = cur;
-		cur->parent = other;
-	}
-	*/	
 	node * other = cur->right;	//set to rotate with
 	cur->right = other->left;	//transplant subtrees
 	if (other->left != nil)
@@ -433,15 +398,25 @@ void rbTree::print() {
 		cout << "Empty" << endl;
 		return;
 	}
-	else
-		inOrderPrint(root);
+	else {
+		int keys[size], index = 0;
+		inOrderPrint(root, keys, index);
+		for (index = 0; index < size; index++) {
+			cout << keys[index];
+			if (index != size - 1)
+				cout << ' ';
+		}	
+	}
 	cout << endl;
+
 }
 
-void rbTree::inOrderPrint(node * cur) {
+// original print function was recursive and O(lg n). altered for no whitespace
+void rbTree::inOrderPrint(node * cur, int * keys, int & index) {
 	if (cur == nil)
 		return;
-	inOrderPrint(cur->left);
-	cout << cur->key << " ";
-	inOrderPrint(cur->right);
+	inOrderPrint(cur->left, keys, index);
+	keys[index] = cur->key;
+	index++;
+	inOrderPrint(cur->right, keys, index);
 }

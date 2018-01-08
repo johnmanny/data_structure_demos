@@ -6,6 +6,7 @@ description: header file for rbtree class
 
 #ifndef RBTREE_H
 #define RBTREE_H
+#include <string>
 
 using namespace std;
 
@@ -52,9 +53,10 @@ class rbTree
 
 		// other functions
 		void destroyTree(node *&);
-		void inOrderPrint(node *);
+		void inOrderPrint(node *, int *, int &);
 
 		node * root;
 		node * nil;
+		int size;
 };
 #endif

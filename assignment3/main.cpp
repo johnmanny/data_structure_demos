@@ -2,8 +2,12 @@
 author: John Nemeth
 sources: class notes, previous projects,
 	  http://www.geeksforgeeks.org/c-program-red-black-tree-insertion/	
-
-description: driver file for RBtree implementation assignment
+description: driver file for RBtree implementation assignment.
+		print function is implemented and called as a 
+		class function for better modularity, security,
+		and because copy constructors are a pain. no whitespace,
+		though!
+		
 */
 
 #include <iostream>
