@@ -1,6 +1,6 @@
 """
 Author: John Nemeth
-Sources: lab4 notes
+Sources: 
 Description: priority queue class file for assignment 2, problem 1
 
 """

@@ -1,6 +1,6 @@
 /*
 	Author: John Nemeth
-	Description: driver file for problem2-1, to find max value in stack
+	Description: driver file for stack implementation of tasks
 	sources: class material and assignment guidelines, http://www.cplusplus.com/articles/DEN36Up4/ for command line argument information
 */
 
@@ -11,7 +11,6 @@
 
 //func prototype to print stack, takes reference of existing stack
 void printStack(stack& aStack);
-void stackMax(stack& aStack);
 
 //main function with command line arguments. int argc is number of arguments " ./a.out problem1-1.input" ./a.out is argument 0, problem1-1.input is arg 1, etc.
 int main(int argc, char* argv[]) {
@@ -52,10 +51,6 @@ int main(int argc, char* argv[]) {
 				printStack(fromFile);
 				cout << endl;
 			}
-			else if (strstr(command, "ma")) {
-				stackMax(fromFile);
-				cout << endl;
-			}
 			in.ignore(MAX, '\n');	
 		}
 	}	
@@ -84,25 +79,3 @@ void printStack(stack& aStack) {
 		aStack = newStack;	
 	}
 }	
-
-//function to find max value in a stack
-void stackMax(stack& aStack) {
-	if (aStack.is_empty())
-		cout << "StackError";
-	else {
-		stack newStack;
-		int popVal[50] = {0}, index = 1, maxVal = 0;
-		while (!aStack.is_empty()) {
-			popVal[index] = aStack.pop();
-			if (popVal[index] > maxVal)
-				maxVal = popVal[index];
-			index++;
-		}
-		while (index > 1) {
-			index--;
-			newStack.push(popVal[index]);
-		}
-		aStack = newStack;
-		cout << maxVal;
-	}
-} 

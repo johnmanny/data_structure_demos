@@ -1,6 +1,6 @@
 /*
 	Author: John Nemeth
-	Desc: implementation file of queue.h. commented out portions of code I might need for future assignments.
+	Desc: implementation file of queue.h. commented out portions of code I might need for future projects
 	Source files: own material.  
 */
 #include <iomanip>

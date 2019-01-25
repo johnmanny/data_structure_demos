@@ -1,6 +1,6 @@
 /*
 	Author: John Nemeth
-	Description: driver file for well ordered brackets assignment
+	Description: driver file for well ordered brackets
 	sources: class material and http://www.programmingnotes.org/?p=1879 for statement semi-template 
 */
 

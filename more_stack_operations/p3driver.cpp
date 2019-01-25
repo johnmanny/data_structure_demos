@@ -1,6 +1,6 @@
 /*
 	Author: John Nemeth
-	Description: driver file for restaurant assignment
+	Description: driver file for restaurant entry and removal
 	sources: class material and previous classwork 
 */
 

@@ -1,6 +1,6 @@
 /*
 	Author: John Nemeth
-	Description: driver file for linked list implementation of stack demonstration. in other words, driver file for assignment1 in cis313
+	Description: driver file for queue implementations of tasks
 	sources: class material and assignment guidelines, http://www.cplusplus.com/articles/DEN36Up4/ for command line argument information
 */
 
